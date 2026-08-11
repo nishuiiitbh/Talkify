@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import userRouter from "./routes/user.routes.js";
+import messageRouter from "./controllers/message.controllers.js";
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/message", messageRouter);
+
 
 app.listen(port, () => {
   connectDb();
