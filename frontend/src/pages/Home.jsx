@@ -12,7 +12,7 @@ function Home() {
     getOtherUsers()
 
     return (
-        <div className='w-full h-[100vh] flex'>
+        <div className='w-full h-[100vh] flex overflow-hidden'>
             <SideBar />
             <MessageArea />
         </div>
