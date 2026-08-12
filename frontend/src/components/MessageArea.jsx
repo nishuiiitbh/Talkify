@@ -10,12 +10,13 @@ import EmojiPicker from "emoji-picker-react";
 import SenderMessage from "./SenderMessage";
 import ReceiverMessage from "./ReceiverMessage";
 import axios from "axios";
+import startConversation from "../assets/startConversation.png";
 import { serverUrl } from "../main";
 import { setMessages } from "../redux/messageSlice";
 
 function MessageArea() {
   let { selectedUser, userData, socket, onlineUsers } = useSelector(
-    (state) => state.user,
+    (state) => state.user
   );
 
   let dispatch = useDispatch();
@@ -31,6 +32,9 @@ function MessageArea() {
 
   const handleImage = (e) => {
     let file = e.target.files[0];
+
+    if (!file) return;
+
     setBackendImage(file);
     setFrontendImage(URL.createObjectURL(file));
   };
@@ -38,7 +42,7 @@ function MessageArea() {
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
-    if (input.length == 0 && backendImage == null) {
+    if (input.length === 0 && backendImage == null) {
       return;
     }
 
@@ -54,7 +58,7 @@ function MessageArea() {
       let result = await axios.post(
         `${serverUrl}/api/message/send/${selectedUser._id}`,
         formData,
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       dispatch(setMessages([...messages, result.data]));
@@ -78,15 +82,17 @@ function MessageArea() {
     });
 
     return () => socket?.off("newMessage");
-  }, [messages, setMessages]);
+  }, [messages, socket]);
 
   return (
     <div
-      className={`lg:w-[70%] relative ${selectedUser ? "flex" : "hidden"} lg:flex w-full h-full bg-slate-200 border-l-2 border-gray-300 overflow-hidden`}
+      className={`lg:w-[70%] relative ${
+        selectedUser ? "flex" : "hidden"
+      } lg:flex w-full h-full bg-[#f4f7fb] border-l-2 border-gray-200 overflow-hidden`}
     >
       {selectedUser && (
-        <div className="w-full h-[100vh] flex flex-col overflow-hidden gap-[20px] items-center">
-          <div className="w-full h-[100px] bg-[#1797c2] rounded-b-[30px] shadow-gray-400 shadow-lg gap-[20px] flex items-center px-[20px]">
+        <div className="w-full h-full flex flex-col overflow-hidden items-center relative">
+          <div className="w-full h-[85px] bg-[#2d80ed] rounded-b-[25px] shadow-gray-400 shadow-lg gap-[15px] flex items-center px-[15px] z-20">
             <div
               className="cursor-pointer"
               onClick={() => dispatch(setSelectedUser(null))}
@@ -98,11 +104,9 @@ function MessageArea() {
               <img
                 src={selectedUser?.image || dp}
                 alt=""
-                className="h-[100%]"
+                className="h-full w-full object-cover"
               />
             </div>
-
-            {/* User Name + Online / Last Seen */}
 
             <div className="flex flex-col">
               <h1 className="text-white font-semibold text-[20px]">
@@ -113,90 +117,104 @@ function MessageArea() {
                 {onlineUsers?.includes(selectedUser?._id)
                   ? "online"
                   : selectedUser?.lastSeen
-                    ? `last seen ${new Date(selectedUser.lastSeen).toLocaleString()}`
-                    : "offline"}
+                  ? `last seen ${new Date(
+                      selectedUser.lastSeen
+                    ).toLocaleString()}`
+                  : "offline"}
               </span>
             </div>
           </div>
 
-          <div className="w-full h-[70%] flex flex-col py-[30px] px-[20px] overflow-auto gap-[20px]">
+          <div className="w-full flex-1 flex flex-col py-[25px] px-[15px] pb-[100px] overflow-y-auto gap-[18px]">
             {showPicker && (
-              <div className="absolute bottom-[120px] left-[20px]">
+              <div className="absolute bottom-[90px] left-[15px] z-[100]">
                 <EmojiPicker
                   width={250}
                   height={350}
-                  className="shadow-lg z-[100]"
+                  className="shadow-lg"
                   onEmojiClick={onEmojiClick}
                 />
               </div>
             )}
 
             {messages &&
-              messages.map((mess) =>
+              messages.map((mess, index) =>
                 mess.sender == userData._id ? (
-                  <SenderMessage image={mess.image} message={mess.message} />
+                  <SenderMessage
+                    key={mess._id || index}
+                    image={mess.image}
+                    message={mess.message}
+                  />
                 ) : (
-                  <ReceiverMessage image={mess.image} message={mess.message} />
-                ),
+                  <ReceiverMessage
+                    key={mess._id || index}
+                    image={mess.image}
+                    message={mess.message}
+                  />
+                )
               )}
+          </div>
+
+          <div className="absolute bottom-[15px] left-0 w-full flex items-center justify-center px-[10px] z-30">
+            {frontendImage && (
+              <img
+                src={frontendImage}
+                alt=""
+                className="w-[75px] h-[75px] object-cover absolute bottom-[75px] right-[15%] rounded-lg shadow-gray-400 shadow-lg border-2 border-white"
+              />
+            )}
+
+            <form
+              className="w-full max-w-[700px] h-[58px] bg-[#2d80ed] shadow-gray-400 shadow-lg rounded-full flex items-center gap-[15px] px-[18px] relative"
+              onSubmit={handleSendMessage}
+            >
+              <div
+                onClick={() => setShowPicker((prev) => !prev)}
+                className="shrink-0"
+              >
+                <RiEmojiStickerLine className="w-[25px] h-[25px] text-white cursor-pointer" />
+              </div>
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={image}
+                hidden
+                onChange={handleImage}
+              />
+
+              <input
+                type="text"
+                className="w-full h-full px-[5px] outline-none border-0 text-[17px] text-white bg-transparent placeholder-white"
+                placeholder="Message"
+                onChange={(e) => setInput(e.target.value)}
+                value={input}
+              />
+
+              <div
+                onClick={() => image.current.click()}
+                className="shrink-0"
+              >
+                <FaImages className="w-[25px] h-[25px] cursor-pointer text-white" />
+              </div>
+
+              {(input.length > 0 || backendImage != null) && (
+                <button type="submit" className="shrink-0">
+                  <RiSendPlane2Fill className="w-[25px] cursor-pointer h-[25px] text-white" />
+                </button>
+              )}
+            </form>
           </div>
         </div>
       )}
 
-      {selectedUser && (
-        <div className="w-full lg:w-[70%] h-[100px] fixed bottom-[20px] flex items-center justify-center">
-          <img
-            src={frontendImage}
-            alt=""
-            className="w-[80px] absolute bottom-[100px] right-[20%] rounded-lg shadow-gray-400 shadow-lg"
-          />
-
-          <form
-            className="w-[95%] lg:w-[70%] h-[60px] bg-[rgb(23,151,194)] shadow-gray-400 shadow-lg rounded-full flex items-center gap-[20px] px-[20px] relative"
-            onSubmit={handleSendMessage}
-          >
-            <div onClick={() => setShowPicker((prev) => !prev)}>
-              <RiEmojiStickerLine className="w-[25px] h-[25px] text-white cursor-pointer" />
-            </div>
-
-            <input
-              type="file"
-              accept="image/*"
-              ref={image}
-              hidden
-              onChange={handleImage}
-            />
-
-            <input
-              type="text"
-              className="w-full h-full px-[10px] outline-none border-0 text-[19px] text-white bg-transparent placeholder-white"
-              placeholder="Message"
-              onChange={(e) => setInput(e.target.value)}
-              value={input}
-            />
-
-            <div onClick={() => image.current.click()}>
-              <FaImages className="w-[25px] h-[25px] cursor-pointer text-white" />
-            </div>
-
-            {(input.length > 0 || backendImage != null) && (
-              <button>
-                <RiSendPlane2Fill className="w-[25px] cursor-pointer h-[25px] text-white" />
-              </button>
-            )}
-          </form>
-        </div>
-      )}
-
       {!selectedUser && (
-        <div className="w-full h-full flex flex-col justify-center items-center">
-          <h1 className="text-gray-700 font-bold text-[50px]">
-            Welcome to Chatly
-          </h1>
-
-          <span className="text-gray-700 font-semibold text-[30px]">
-            Chat Friendly !
-          </span>
+        <div className="w-full h-full flex justify-center items-center bg-[#f4f7fb] overflow-hidden p-[15px]">
+          <img
+            src={startConversation}
+            alt="Start Conversation"
+            className="w-full h-full max-w-[1000px] max-h-full object-contain"
+          />
         </div>
       )}
     </div>

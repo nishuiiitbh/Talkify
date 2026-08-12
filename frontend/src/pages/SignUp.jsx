@@ -2,59 +2,167 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { serverUrl } from '../main'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setUserData } from '../redux/userSlice'
+import signupIllustration from "../assets/loginIllustration.png"
 
 function SignUp() {
-    let navigate=useNavigate()
-    let [show,setShow]=useState(false)
-let [userName,setUserName]=useState("")
-let [email,setEmail]=useState("")
-let [password,setPassword]=useState("")
-let [loading,setLoading]=useState(false)
-let [err,setErr]=useState("")
-let dispatch=useDispatch()
+  let navigate = useNavigate()
+  let [show, setShow] = useState(false)
+  let [userName, setUserName] = useState("")
+  let [email, setEmail] = useState("")
+  let [password, setPassword] = useState("")
+  let [loading, setLoading] = useState(false)
+  let [err, setErr] = useState("")
+  let dispatch = useDispatch()
 
-    const handleSignUp=async (e)=>{
-        e.preventDefault()
-        setLoading(true)
-        try {
-            let result =await axios.post(`${serverUrl}/api/auth/signup`,{
-userName,email,password
-            },{withCredentials:true})
-           dispatch(setUserData(result.data))
-           navigate("/profile")
-            setEmail("")
-            setPassword("")
-            setLoading(false)
-            setErr("")
-        } catch (error) {
-            console.log(error)
-            setLoading(false)
-            setErr(error?.response?.data?.message)
-        }
+  const handleSignUp = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      let result = await axios.post(
+        `${serverUrl}/api/auth/signup`,
+        {
+          userName,
+          email,
+          password
+        },
+        { withCredentials: true }
+      )
+
+      dispatch(setUserData(result.data))
+      navigate("/profile")
+
+      setEmail("")
+      setPassword("")
+      setLoading(false)
+      setErr("")
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+      setErr(error?.response?.data?.message)
     }
+  }
 
   return (
-    <div className='w-full h-[100vh] bg-slate-200 flex items-center justify-center'>
-     <div className='w-full max-w-[500px] h-[600px] bg-white rounded-lg shadow-gray-400 shadow-lg flex flex-col gap-[30px]'>
-        <div className='w-full h-[200px] bg-[#20c7ff] rounded-b-[30%] shadow-gray-400 shadow-lg flex items-center justify-center'>
-           <h1 className='text-gray-600 font-bold text-[30px]'>welcome to <span  className='text-white'>chatly</span></h1>
-        </div>
-        <form className='w-full flex flex-col gap-[20px] items-center' onSubmit={handleSignUp}>
+    <div className='min-h-screen w-full bg-[#eef3fb] flex items-center justify-center p-4'>
+      <div className='w-full max-w-[1050px] min-h-[620px] bg-white rounded-[28px] shadow-2xl overflow-hidden flex flex-col md:flex-row'>
 
-        <input type="text" placeholder='username' className='w-[90%] h-[50px] outline-none border-2 border-[#20c7ff] px-[20px] py-[10px] bg-[white] rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]' onChange={(e)=>setUserName(e.target.value)} value={userName}/>
-        <input type="email" placeholder='email' className='w-[90%] h-[50px] outline-none border-2 border-[#20c7ff] px-[20px] py-[10px] bg-[white] rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]'  onChange={(e)=>setEmail(e.target.value)} value={email}/>
-        <div className='w-[90%] h-[50px] border-2 border-[#20c7ff] overflow-hidden rounded-lg shadow-gray-200 shadow-lg relative'>
-        <input type={`${show?"text":"password"}`} placeholder='password' className='w-full h-full outline-none  px-[20px] py-[10px] bg-[white]  text-gray-700 text-[19px]'  onChange={(e)=>setPassword(e.target.value)} value={password}/>
-        <span className='absolute top-[10px] right-[20px] text-[19px] text-[#20c7ff] font-semibold cursor-pointer' onClick={()=>setShow(prev=>!prev)}>{`${show?"hidden":"show"}`}</span>
+        <div className='w-full md:w-[48%] h-[400px] md:h-auto bg-[#20c7ff] overflow-hidden flex items-center justify-center'>
+          <img
+            src={signupIllustration}
+            alt="Talkify"
+            className='w-full h-full object-cover'
+          />
         </div>
-        {err && <p className='text-red-500'>{"*" + err}</p>}
-        <button className='px-[20px] py-[10px] bg-[#20c7ff] rounded-2xl shadow-gray-400 shadow-lg text-[20px] w-[200px] mt-[20px] font-semibold hover:shadow-inner' disabled={loading}>{loading?"Loading...":"Sign Up"}</button>
-        <p className='cursor-pointer' onClick={()=>navigate("/login")}>Already Have An Account ? <span className='text-[#20c7ff] text-[bold]' >Login</span></p>
-     </form>
-     </div>
-     
+
+        <div className='w-full md:w-[52%] bg-white flex items-center justify-center px-7 py-10 md:px-12'>
+          <div className='w-full max-w-[420px]'>
+
+            <div className='mb-8'>
+              <h1 className='text-[32px] md:text-[36px] font-bold text-gray-800'>
+                Create your account 👋
+              </h1>
+              <p className='text-gray-500 mt-2 text-[15px]'>
+                Join Talkify and start chatting with your friends.
+              </p>
+            </div>
+
+            <form
+              className='w-full flex flex-col gap-5'
+              onSubmit={handleSignUp}
+            >
+
+              <div>
+                <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder='Enter your username'
+                  className='w-full h-[54px] border border-gray-300 rounded-xl px-4 outline-none text-gray-700 focus:border-[#2583f7] focus:ring-2 focus:ring-[#2583f7]/20 transition-all'
+                  onChange={(e) => setUserName(e.target.value)}
+                  value={userName}
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  placeholder='Enter your email'
+                  className='w-full h-[54px] border border-gray-300 rounded-xl px-4 outline-none text-gray-700 focus:border-[#2583f7] focus:ring-2 focus:ring-[#2583f7]/20 transition-all'
+                  onChange={(e) => setEmail(e.target.value)}
+                  value={email}
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm font-semibold text-gray-700 mb-2'>
+                  Password
+                </label>
+
+                <div className='w-full h-[54px] border border-gray-300 rounded-xl flex items-center px-4 transition-all focus-within:border-[#2583f7] focus-within:ring-2 focus-within:ring-[#2583f7]/20'>
+                  <input
+                    type={show ? "text" : "password"}
+                    placeholder='Enter your password'
+                    className='w-full h-full outline-none bg-transparent text-gray-700'
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                  />
+
+                  <span
+                    className='text-[#2583f7] text-sm font-semibold cursor-pointer select-none'
+                    onClick={() => setShow(prev => !prev)}
+                  >
+                    {show ? "hide" : "show"}
+                  </span>
+                </div>
+              </div>
+
+              {err && (
+                <p className='text-red-500 text-sm font-medium'>
+                  {"*" + err}
+                </p>
+              )}
+
+              <button
+                type='submit'
+                disabled={loading}
+                className='w-full h-[54px] bg-[#2583f7] hover:bg-[#176fd8] text-white rounded-xl font-semibold text-[17px] shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2'
+              >
+                {loading ? "Loading..." : "Sign Up"}
+              </button>
+
+            </form>
+
+            <div className='flex items-center gap-3 my-7'>
+              <div className='flex-1 h-[1px] bg-gray-200'></div>
+              <span className='text-gray-400 text-sm'>
+                Already have an account?
+              </span>
+              <div className='flex-1 h-[1px] bg-gray-200'></div>
+            </div>
+
+            <button
+              type='button'
+              onClick={() => navigate("/login")}
+              className='w-full h-[52px] border-2 border-[#2583f7] text-[#2583f7] rounded-xl font-semibold hover:bg-[#2583f7] hover:text-white transition-all'
+            >
+              Login
+            </button>
+
+            <p className='text-center text-gray-400 text-xs mt-7'>
+              Talkify • Connect. Chat. Conquer.
+            </p>
+
+          </div>
+        </div>
+
+      </div>
     </div>
   )
 }
