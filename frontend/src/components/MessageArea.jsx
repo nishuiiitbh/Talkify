@@ -4,13 +4,13 @@ import dp from "../assets/dp.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedUser } from "../redux/userSlice";
 import { RiEmojiStickerLine } from "react-icons/ri";
-import { FaImages } from "react-icons/fa6";
+import { FaImages, FaRegComments, FaUsers } from "react-icons/fa6";
 import { RiSendPlane2Fill } from "react-icons/ri";
+import { IoSparklesOutline } from "react-icons/io5";
 import EmojiPicker from "emoji-picker-react";
 import SenderMessage from "./SenderMessage";
 import ReceiverMessage from "./ReceiverMessage";
 import axios from "axios";
-import startConversation from "../assets/startConversation.png";
 import { serverUrl } from "../main";
 import { setMessages } from "../redux/messageSlice";
 
@@ -209,12 +209,51 @@ function MessageArea() {
       )}
 
       {!selectedUser && (
-        <div className="w-full h-full flex justify-center items-center bg-[#f4f7fb] overflow-hidden p-[15px]">
-          <img
-            src={startConversation}
-            alt="Start Conversation"
-            className="w-full h-full max-w-[1000px] max-h-full object-contain"
-          />
+        <div className="w-full h-full flex flex-col justify-center items-center bg-[#f4f7fb] px-[20px] py-[30px]">
+          <div className="flex items-center justify-center gap-[12px] mb-[25px]">
+            <div className="w-[65px] h-[65px] rounded-2xl bg-[#2d80ed] flex items-center justify-center shadow-lg rotate-[-6deg]">
+              <FaRegComments className="text-white w-[32px] h-[32px]" />
+            </div>
+
+            <div className="w-[50px] h-[50px] rounded-2xl bg-white flex items-center justify-center shadow-md rotate-[8deg]">
+              <FaUsers className="text-[#2d80ed] w-[25px] h-[25px]" />
+            </div>
+
+            <div className="w-[50px] h-[50px] rounded-2xl bg-white flex items-center justify-center shadow-md rotate-[-5deg]">
+              <IoSparklesOutline className="text-[#2d80ed] w-[27px] h-[27px]" />
+            </div>
+          </div>
+
+          <h1 className="text-[#172b4d] text-[30px] sm:text-[36px] font-bold text-center">
+            Your space for conversations.
+          </h1>
+
+          <p className="text-gray-500 text-[16px] sm:text-[18px] text-center mt-[10px] max-w-[500px]">
+            Select someone from the sidebar to begin chatting.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-[15px] mt-[35px]">
+            <div className="bg-white rounded-2xl px-[20px] py-[15px] shadow-md flex items-center gap-[10px]">
+              <FaRegComments className="text-[#2d80ed] w-[20px] h-[20px]" />
+              <span className="text-gray-700 font-medium">Messages</span>
+            </div>
+
+            <div className="bg-white rounded-2xl px-[20px] py-[15px] shadow-md flex items-center gap-[10px]">
+              <FaUsers className="text-[#2d80ed] w-[20px] h-[20px]" />
+              <span className="text-gray-700 font-medium">Connect</span>
+            </div>
+
+            <div className="bg-white rounded-2xl px-[20px] py-[15px] shadow-md flex items-center gap-[10px]">
+              <IoSparklesOutline className="text-[#2d80ed] w-[20px] h-[20px]" />
+              <span className="text-gray-700 font-medium">Chat</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-[8px] mt-[30px] text-gray-400 text-[14px]">
+            <span>✨</span>
+            <span>Happy chatting!</span>
+            <span>💙</span>
+          </div>
         </div>
       )}
     </div>
