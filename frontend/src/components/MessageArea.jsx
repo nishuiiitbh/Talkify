@@ -76,10 +76,8 @@ return ()=>socket?.off("newMessage")
 
 {showPicker && <div className='absolute bottom-[120px] left-[20px]'><EmojiPicker width={250} height={350} className='shadow-lg z-[100]' onEmojiClick={onEmojiClick}/></div> }
 
-{messages && messages.map((mess) => (
-    mess.sender == userData._id
-    ? <SenderMessage key={mess._id} image={mess.image} message={mess.message}/>
-    : <ReceiverMessage key={mess._id} image={mess.image} message={mess.message}/>
+{messages && messages.map((mess)=>(
+  mess.sender==userData._id?<SenderMessage image={mess.image} message={mess.message}/>:<ReceiverMessage image={mess.image} message={mess.message}/>
 ))}
  
 
