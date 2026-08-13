@@ -1,5 +1,5 @@
 import React from 'react'
-import SideBar from '../components/SideBar'
+import SideBar from '../components/Sidebar'
 import MessageArea from '../components/MessageArea'
 import { useSelector } from 'react-redux'
 import getMessage from '../customHooks/getMessages'
