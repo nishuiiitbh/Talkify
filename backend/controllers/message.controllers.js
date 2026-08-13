@@ -54,46 +54,65 @@ export const getMessages=async (req,res)=>{
             partcipants:{$all:[sender,receiver]}
         }).populate("messages")
 
-        return res.status(200).json(conversation?.messages)
+        return res.status(200).json(conversation ? conversation.messages : [])
     } catch (error) {
         return res.status(500).json({message:`get Message error ${error}`})
     }
 }
 
-export const deleteMessage=async (req,res)=>{
+export const deleteMessage = async (req, res) => {
     try {
-        let userId=req.userId
-        let {messageId}=req.params
+        let userId = req.userId
+        let { messageId } = req.params
 
-        let message=await Message.findById(messageId)
+        let message = await Message.findById(messageId)
 
-        if(!message){
-            return res.status(404).json({message:"Message not found"})
+        if (!message) {
+            return res.status(404).json({
+                message: "Message not found"
+            })
         }
 
-        if(message.sender.toString() !== userId.toString()){
-            return res.status(403).json({message:"You can only delete your own message"})
+        if (
+            message.sender.toString() !== userId.toString() &&
+            message.receiver.toString() !== userId.toString()
+        ) {
+            return res.status(403).json({
+                message: "You are not allowed to delete this message"
+            })
         }
 
         await Conversation.updateMany(
-            {messages:messageId},
-            {$pull:{messages:messageId}}
+            { messages: messageId },
+            { $pull: { messages: messageId } }
         )
 
-        const receiverSocketId=getReceiverSocketId(message.receiver.toString())
+        const receiverSocketId = getReceiverSocketId(
+            message.receiver.toString()
+        )
 
-        if(receiverSocketId){
-            io.to(receiverSocketId).emit("messageDeleted",messageId)
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("messageDeleted", messageId)
+        }
+
+        const senderSocketId = getReceiverSocketId(
+            message.sender.toString()
+        )
+
+        if (senderSocketId) {
+            io.to(senderSocketId).emit("messageDeleted", messageId)
         }
 
         await Message.findByIdAndDelete(messageId)
 
         return res.status(200).json({
-            message:"Message deleted successfully",
+            message: "Message deleted successfully",
             messageId
         })
 
     } catch (error) {
-        return res.status(500).json({message:`delete Message error ${error}`})
+        return res.status(500).json({
+            message: `delete Message error ${error}`
+        })
     }
 }

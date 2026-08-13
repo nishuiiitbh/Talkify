@@ -1,5 +1,6 @@
 import uploadOnCloudinary from "../config/cloudinary.js"
 import User from "../models/user.model.js"
+import Conversation from "../models/conversation.model.js"
 
 export const getCurrentUser=async (req,res)=>{
 try {
@@ -36,14 +37,30 @@ export const editProfile=async (req,res)=>{
     }
 }
 
-export const getOtherUsers=async (req,res)=>{
+export const getOtherUsers = async (req, res) => {
     try {
-        let users=await User.find({
-            _id:{$ne:req.userId}
-        }).select("-password")
+        let userId = req.userId
+
+        let conversations = await Conversation.find({
+            partcipants: userId
+        }).populate("partcipants", "-password")
+
+        let users = []
+
+        conversations.forEach((conversation) => {
+            conversation.partcipants.forEach((user) => {
+                if (user._id.toString() !== userId.toString()) {
+                    users.push(user)
+                }
+            })
+        })
+
         return res.status(200).json(users)
+
     } catch (error) {
-        return res.status(500).json({message:`get other users error ${error}`})
+        return res.status(500).json({
+            message: `get other users error ${error}`
+        })
     }
 }
 
