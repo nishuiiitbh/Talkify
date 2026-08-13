@@ -13,9 +13,11 @@ const port=process.env.PORT || 5000
 
 
 app.use(cors({
-    origin:"https://talkify-app-qq5q.onrender.com",
-    credentials:true
-}))
+    origin: "https://talkify-app-qq5q.onrender.com",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json())
 app.use(cookieParser())
 app.use("/api/auth",authRouter)
