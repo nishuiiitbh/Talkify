@@ -2,10 +2,16 @@ import React, { useEffect, useRef } from "react";
 import dp from "../assets/dp.webp";
 import { useSelector } from "react-redux";
 
-function ReceiverMessage({ image, message }) {
-  let scroll = useRef();
-
-  let { selectedUser } = useSelector((state) => state.user);
+function ReceiverMessage({
+  image,
+  message,
+  messageId,
+  selectMode,
+  selected,
+  onSelect,
+}) {
+  const scroll = useRef();
+  const { selectedUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     scroll?.current?.scrollIntoView({
@@ -20,26 +26,11 @@ function ReceiverMessage({ image, message }) {
   };
 
   return (
-    <div className="w-full flex items-end gap-[10px]">
-
-    
-      <div
-        className="
-          w-[40px]
-          h-[40px]
-          rounded-full
-          overflow-hidden
-          flex
-          justify-center
-          items-center
-          bg-white
-          cursor-pointer
-          shadow-md
-          shrink-0
-          border-2
-          border-white
-        "
-      >
+    <div
+      className="w-full flex items-end gap-[10px] cursor-pointer"
+      onClick={() => selectMode && onSelect(messageId)}
+    >
+      <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex justify-center items-center bg-white shadow-md shrink-0 border-2 border-white">
         <img
           src={selectedUser?.image || dp}
           alt=""
@@ -49,27 +40,10 @@ function ReceiverMessage({ image, message }) {
 
       <div
         ref={scroll}
-        className="
-          w-fit
-          max-w-[500px]
-          px-[20px]
-          py-[10px]
-          bg-white
-          text-[#1F2937]
-          text-[17px]
-          rounded-2xl
-          rounded-tl-none
-          relative
-          shadow-md
-          border
-          border-[#E2E8F0]
-          gap-[10px]
-          flex
-          flex-col
-          break-words
-        "
+        className={`w-fit max-w-[500px] px-[20px] py-[10px] bg-white text-[#1F2937] text-[17px] rounded-2xl rounded-tl-none relative shadow-md border border-[#E2E8F0] gap-[10px] flex flex-col break-words ${
+          selected ? "ring-4 ring-blue-300" : ""
+        }`}
       >
-     
         {image && (
           <img
             src={image}
@@ -79,14 +53,8 @@ function ReceiverMessage({ image, message }) {
           />
         )}
 
-  
-        {message && (
-          <span className="break-words">
-            {message}
-          </span>
-        )}
+        {message && <span className="break-words">{message}</span>}
       </div>
-
     </div>
   );
 }
